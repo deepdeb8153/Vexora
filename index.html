@@ -1,1661 +1,853 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birthday Memory QR – Admin & Projects</title>
-    <meta name="description" content="Create and manage private birthday memory pages with QR codes." />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>" />
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <!-- AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Cinematic Birthday Surprise | For Someone Special</title>
+    <!-- High-End Typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,900&display=swap"
+        rel="stylesheet">
     <style>
-        /* ===== RESET & BASE ===== */
-        *,
-        *::before,
-        *::after {
+        :root {
+            --accent: #ff2d55;
+            --accent-glow: rgba(255, 45, 85, 0.5);
+            --gold: #d4af37;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #0a0a0b;
+            --royal-red: #6e0000;
+            --bulb-warm: #ffde6b;
+            --bulb-glow: rgba(255, 222, 107, 0.8);
+        }
+
+        /* --- Strict Layout Fixes --- */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+        }
+
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #6c3ce0;
-            --primary-light: #8b5cf6;
-            --primary-dark: #5b21b6;
-            --bg-dark: #0a0a0f;
-            --bg-card: rgba(255, 255, 255, 0.05);
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --text-primary: #f1f1f1;
-            --text-secondary: #a0a0b0;
-            --text-muted: #6b6b7a;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --radius: 20px;
-            --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        html {
-            scroll-behavior: smooth;
+            user-select: none;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            perspective: 1000px;
+        }
+
+        /* --- Main Container / Page Layout --- */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
             min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        /* ===== LOADING SCREEN ===== */
-        #loader {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: var(--bg-dark);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-        #loader.hidden {
-            opacity: 0;
+            padding: 20px;
+            text-align: center;
             visibility: hidden;
-            pointer-events: none;
+            opacity: 0;
+            transform: scale(1.1) translateZ(0);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            overflow: hidden;
         }
-        .loader-ring {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: var(--primary-light);
-            border-bottom-color: var(--primary);
-            animation: spin 1s linear infinite;
-            position: relative;
+
+        .page.active {
+            visibility: visible;
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+            z-index: 10;
         }
-        .loader-ring::after {
-            content: '🎂';
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+
+        /* --- Animations --- */
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-110vh) scale(1.5) rotate(360deg);
+                opacity: 0;
             }
         }
-        @keyframes pulse {
+
+        @keyframes neonPulse {
+            0% {
+                box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent);
+            }
+
+            50% {
+                box-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent);
+            }
+
+            100% {
+                box-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent);
+            }
+        }
+
+        @keyframes sparkle {
+
             0%,
             100% {
-                transform: scale(1);
+                opacity: 0;
+                transform: scale(0);
             }
+
             50% {
-                transform: scale(1.15);
+                opacity: 1;
+                transform: scale(1.2);
             }
         }
-        .loader-text {
-            margin-top: 24px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            letter-spacing: 2px;
-            font-size: 14px;
+
+        /* --- Hero Page --- */
+        #hero-page {
+            background: radial-gradient(circle at center, #1a0a0c 0%, #050505 100%);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 900;
+            font-style: italic;
+            background: linear-gradient(to right, #fff, #ff2d55, #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
             text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
         }
 
-        /* ===== ANIMATED BACKGROUND ===== */
-        .bg-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .bg-canvas .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.3;
-            animation: floatOrb 20s ease-in-out infinite alternate;
-        }
-        .bg-canvas .orb:nth-child(1) {
-            width: 500px;
-            height: 500px;
-            background: #6c3ce0;
-            top: -10%;
-            left: -10%;
-            animation-duration: 25s;
-        }
-        .bg-canvas .orb:nth-child(2) {
-            width: 400px;
-            height: 400px;
-            background: #ec4899;
-            bottom: -10%;
-            right: -10%;
-            animation-duration: 30s;
-            animation-delay: -5s;
-        }
-        .bg-canvas .orb:nth-child(3) {
-            width: 300px;
-            height: 300px;
-            background: #3b82f6;
-            top: 40%;
-            right: 20%;
-            animation-duration: 20s;
-            animation-delay: -10s;
-        }
-        @keyframes floatOrb {
-            0% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(40px, -30px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 40px) scale(0.9);
-            }
-            100% {
-                transform: translate(30px, -10px) scale(1.05);
-            }
-        }
-
-        /* ===== PARTICLES ===== */
-        #particles-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* ===== CONTAINER ===== */
-        .container {
+        .btn-neon {
             position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* ===== HEADER ===== */
-        .header {
-            padding: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 24px;
-            font-weight: 700;
-            color: #fff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .logo i {
-            color: var(--primary-light);
-            font-size: 30px;
-        }
-        .logo span {
-            background: linear-gradient(135deg, var(--primary-light), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: color var(--transition);
-            position: relative;
-            cursor: pointer;
-        }
-        .nav-links a:hover {
-            color: #fff;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary-light);
-            transition: width var(--transition);
-        }
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: #fff;
-            border: none;
-            padding: 10px 28px;
-            border-radius: 50px;
+            padding: 18px 45px;
+            font-size: 1.1rem;
             font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform var(--transition), box-shadow var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(108, 60, 224, 0.4);
-        }
-        .btn-secondary {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: #fff;
-            padding: 10px 28px;
+            color: white;
+            background: transparent;
+            border: 1px solid var(--accent);
             border-radius: 50px;
-            font-weight: 600;
-            font-size: 14px;
             cursor: pointer;
-            transition: all var(--transition);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(12px);
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-        .btn-danger {
-            background: #dc2626;
-            color: #fff;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all var(--transition);
-        }
-        .btn-danger:hover {
-            background: #b91c1c;
-            transform: scale(1.05);
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            min-height: calc(100vh - 100px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px 0;
-        }
-        .hero-badge {
-            display: inline-block;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(12px);
-            padding: 6px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            letter-spacing: 0.5px;
-        }
-        .hero-badge i {
-            color: var(--primary-light);
-            margin-right: 8px;
-        }
-        .hero h1 {
-            font-size: clamp(40px, 8vw, 80px);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff 30%, var(--primary-light) 70%, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p {
-            font-size: clamp(16px, 2vw, 22px);
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 32px;
-        }
-        .hero-actions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 48px;
-        }
-
-        /* ===== PROJECTS GRID ===== */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            margin: 40px 0 60px;
-            width: 100%;
-        }
-        .project-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            border-radius: var(--radius);
-            padding: 24px;
-            transition: all var(--transition);
-            text-align: left;
-            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             overflow: hidden;
-        }
-        .project-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary-light);
-            box-shadow: var(--shadow);
-        }
-        .project-card .project-name {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .project-card .project-nick {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        .project-card .project-date {
-            color: var(--text-muted);
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 12px;
-        }
-        .project-card .project-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .project-card .project-actions button {
-            flex: 1;
-            min-width: 80px;
-        }
-        .project-card .qr-small {
-            width: 60px;
-            height: 60px;
-            background: #fff;
-            border-radius: 8px;
-            padding: 4px;
-            float: right;
-            margin-left: 12px;
-        }
-        .project-card .qr-small img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .project-card .locked-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            color: #fbbf24;
-            border: 1px solid #fbbf24;
+            transition: 0.5s;
+            animation: neonPulse 2s infinite;
         }
 
-        /* ===== ADMIN PANEL ===== */
-        .admin-section {
-            display: none;
-            padding: 40px 0;
-        }
-        .admin-section.active {
-            display: block;
-        }
-
-        .admin-login {
-            max-width: 400px;
-            margin: 80px auto;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            border-radius: var(--radius);
-            padding: 40px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        .admin-login h2 {
-            margin-bottom: 24px;
-        }
-        .admin-login input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
+        .btn-neon:hover {
+            background: var(--accent);
             color: #fff;
-            font-size: 16px;
-            margin-bottom: 16px;
-            outline: none;
-            transition: border var(--transition);
-        }
-        .admin-login input:focus {
-            border-color: var(--primary-light);
-        }
-        .admin-login .btn-primary {
-            width: 100%;
-            justify-content: center;
-        }
-        .admin-login .error {
-            color: #f87171;
-            font-size: 14px;
-            margin-top: 8px;
+            box-shadow: 0 0 50px var(--accent);
         }
 
-        .admin-dashboard {
-            display: none;
-        }
-        .admin-dashboard.active {
-            display: block;
-        }
-
-        .admin-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            gap: 16px;
-        }
-        .admin-header h2 {
-            font-size: 28px;
-        }
-
-        .admin-form {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(16px);
-            border-radius: var(--radius);
-            padding: 30px;
-            margin-bottom: 40px;
-            display: none;
-        }
-        .admin-form.active {
-            display: block;
-        }
-        .admin-form .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .admin-form .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .admin-form .form-group.full {
-            grid-column: 1 / -1;
-        }
-        .admin-form label {
-            font-weight: 500;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        .admin-form input,
-        .admin-form textarea,
-        .admin-form select {
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            transition: border var(--transition);
-            font-family: inherit;
-        }
-        .admin-form input:focus,
-        .admin-form textarea:focus {
-            border-color: var(--primary-light);
-        }
-        .admin-form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .admin-form .file-upload {
-            border: 2px dashed var(--glass-border);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all var(--transition);
-        }
-        .admin-form .file-upload:hover {
-            border-color: var(--primary-light);
-            background: rgba(139, 92, 246, 0.05);
-        }
-        .admin-form .file-upload input {
-            display: none;
-        }
-        .admin-form .preview-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .admin-form .preview-item {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-        }
-        .admin-form .preview-item img,
-        .admin-form .preview-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .admin-form .preview-item .remove {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .admin-form .form-actions {
-            display: flex;
-            gap: 16px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-
-        .project-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .project-list .project-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 20px;
-            transition: all var(--transition);
-        }
-        .project-list .project-item:hover {
-            border-color: var(--primary-light);
-        }
-        .project-list .project-item .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .project-list .project-item .item-header h4 {
-            font-size: 18px;
-        }
-        .project-list .project-item .item-header .badge {
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 30px;
-            background: var(--primary);
-        }
-        .project-list .project-item .item-details {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin: 8px 0;
-        }
-        .project-list .project-item .item-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-        }
-        .project-list .project-item .item-actions button {
-            flex: 1;
-            min-width: 60px;
-            font-size: 12px;
-            padding: 6px 12px;
-        }
-
-        /* ===== PROJECT VIEW (Celebration Page) ===== */
-        .project-view {
-            display: none;
-            padding: 40px 0;
-        }
-        .project-view.active {
-            display: block;
-        }
-        .project-view .back-btn {
-            margin-bottom: 20px;
-        }
-        .celebration {
-            text-align: center;
-        }
-        .celebration h1 {
-            font-size: clamp(40px, 8vw, 72px);
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff, var(--primary-light), #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-        .celebration .sub {
-            color: var(--text-secondary);
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .celebration .countdown-wrapper {
-            max-width: 500px;
-            margin: 0 auto 30px;
-        }
-        .celebration .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            margin: 30px 0;
-        }
-        .celebration .gallery .media-item {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            background: var(--bg-card);
-            aspect-ratio: 1;
-        }
-        .celebration .gallery .media-item img,
-        .celebration .gallery .media-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .celebration .message-box {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .celebration .message-box h3 {
-            margin-bottom: 8px;
-        }
-        .celebration .message-box p {
-            color: var(--text-secondary);
-        }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
+        /* --- SLIDER MESSAGE CARD --- */
+        .slider-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
+            padding: 60px 40px;
+            border-radius: 40px;
             border: 1px solid var(--glass-border);
-            padding: 16px 24px;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s ease;
-            z-index: 999;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .toast i {
-            font-size: 20px;
-        }
-        .toast.success i {
-            color: #34d399;
-        }
-        .toast.error i {
-            color: #f87171;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
         }
 
-        /* ===== MODAL ===== */
-        .modal {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
+        .step-content {
             display: none;
+            min-height: 120px;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: var(--bg-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
-            padding: 30px;
-            max-width: 420px;
-            width: 100%;
-            box-shadow: var(--shadow);
-        }
-        .modal-content h3 {
-            margin-bottom: 16px;
-        }
-        .modal-content input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 16px;
-            margin-bottom: 16px;
-            outline: none;
-        }
-        .modal-content input:focus {
-            border-color: var(--primary-light);
-        }
-        .modal-content .actions {
-            display: flex;
-            gap: 12px;
-        }
-        .modal-content .actions button {
-            flex: 1;
+            animation: fadeInScale 0.8s forwards;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
+        .step-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
             }
-            .nav-links {
-                justify-content: center;
-                gap: 12px;
-            }
-            .admin-form .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .project-list {
-                grid-template-columns: 1fr;
-            }
-            .celebration .gallery {
-                grid-template-columns: repeat(2, 1fr);
+
+            to {
+                opacity: 1;
+                transform: scale(1);
             }
         }
-        @media (max-width: 480px) {
-            .celebration .gallery {
-                grid-template-columns: 1fr 1fr;
+
+        .step-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 30px;
+            color: #fff;
+            font-weight: 400;
+        }
+
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: 0.4s;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            transform: scale(1.5);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* --- Celebration Page --- */
+        #celebration-page {
+            background: #000;
+            transition: background 2s ease;
+        }
+
+        #celebration-page.bright {
+            background: radial-gradient(circle at center, #2a0a0e 0%, #0a0a0b 100%);
+        }
+
+        /* --- FAIRY LIGHTS --- */
+        .fairy-lights-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 150px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease;
+            z-index: 5;
+        }
+
+        .wire-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #222;
+            stroke-width: 2;
+        }
+
+        .bulb-teardrop {
+            position: absolute;
+            width: 16px;
+            height: 24px;
+            border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+            background: #444;
+            transform-origin: top center;
+            transform: translate(-50%, 0);
+            box-shadow: none;
+            transition: background 1s, box-shadow 1s;
+        }
+
+        .bright .bulb-teardrop {
+            background: radial-gradient(circle at 30% 30%, #fff, var(--bulb-warm) 60%, #b8860b);
+            box-shadow: 0 0 15px var(--bulb-glow), 0 0 30px var(--bulb-glow);
+            animation: flicker var(--d) infinite alternate;
+        }
+
+        /* --- REALISTIC BALLOONS --- */
+        .balloon {
+            position: absolute;
+            bottom: -200px;
+            width: 60px;
+            height: 80px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            z-index: 100;
+            animation: balloonFloat 8s ease-in forwards;
+            display: flex;
+            justify-content: center;
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            width: 10px;
+            height: 6px;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            width: 1px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: top;
+            animation: stringWobble 2s infinite ease-in-out;
+        }
+
+        .balloon-shine {
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 15px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            filter: blur(2px);
+            transform: rotate(30deg);
+        }
+
+        @keyframes balloonFloat {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
             }
-            .admin-form .preview-item {
-                width: 60px;
-                height: 60px;
+
+            100% {
+                transform: translateY(-130vh) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes stringWobble {
+
+            0%,
+            100% {
+                transform: rotate(-2deg);
+            }
+
+            50% {
+                transform: rotate(2deg);
+            }
+        }
+
+        /* --- Curtain Page --- */
+        .stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .curtain-panel {
+            position: absolute;
+            top: 0;
+            width: 51%;
+            height: 100%;
+            background: repeating-linear-gradient(to right, var(--royal-red), #4a0000 10%);
+            z-index: 20;
+            transition: transform 2.5s cubic-bezier(0.645, 0.045, 0.355, 1);
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .curtain-left {
+            left: 0;
+            border-right: 4px solid var(--gold);
+        }
+
+        .curtain-right {
+            right: 0;
+            border-left: 4px solid var(--gold);
+        }
+
+        .open .curtain-left {
+            transform: translateX(-100%) skewY(-5deg);
+        }
+
+        .open .curtain-right {
+            transform: translateX(100%) skewY(5deg);
+        }
+
+        .secret-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #1a1a1a, #000);
+        }
+
+        .message-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: clamp(20px, 5vw, 50px);
+            border-radius: 30px;
+            max-width: 700px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        /* --- MEMORY GALLERY FIXES --- */
+        #gallery-page {
+            background: #050505;
+            overflow-y: auto;
+            display: block;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        .gallery-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 60px;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            position: relative;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .memory-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 20px 50px var(--accent-glow);
+            border-color: var(--accent);
+        }
+
+        .memory-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .memory-card:hover .memory-image {
+            transform: scale(1.1);
+        }
+
+        .memory-hover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(3px);
+        }
+
+        .memory-card:hover .memory-hover-overlay {
+            opacity: 1;
+        }
+
+        .hover-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+            line-height: 1.4;
+            text-shadow: 0 0 15px var(--accent);
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .memory-card:hover .hover-message {
+            transform: translateY(0);
+        }
+
+        /* Sparkle over gallery */
+        .gallery-sparkle {
+            position: absolute;
+            pointer-events: none;
+            background: white;
+            border-radius: 50%;
+            animation: sparkleAnim 2s infinite;
+        }
+
+        @keyframes sparkleAnim {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .memory-card {
+                height: 350px;
             }
         }
     </style>
 </head>
+
 <body>
 
-    <!-- ===== LOADING ===== -->
-    <div id="loader">
-        <div class="loader-ring"></div>
-        <div class="loader-text">Loading Magic...</div>
-    </div>
+    <!-- HERO SECTION -->
+    <section id="hero-page" class="page active">
+        <div id="particle-container"
+            style="position: absolute; width: 100%; height: 100%; top:0; left:0; pointer-events: none;"></div>
+        <h1 class="hero-title">Happy Birthday, Riddhi</h1>
+        <p class="hero-sub">A Cinematic Journey Created Just For You</p>
+        <button class="btn-neon" onclick="transitionTo('message-slider-page')">Open Your Gift</button>
+    </section>
 
-    <!-- ===== BACKGROUND ===== -->
-    <div class="bg-canvas">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
-    <canvas id="particles-canvas"></canvas>
-
-    <!-- ===== TOAST ===== -->
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toast-message">Done!</span>
-    </div>
-
-    <!-- ===== PASSWORD MODAL ===== -->
-    <div class="modal" id="passwordModal">
-        <div class="modal-content">
-            <h3><i class="fas fa-lock"></i> Enter Project Password</h3>
-            <p style="color:var(--text-secondary);font-size:14px;margin-bottom:12px;">This project is password protected.</p>
-            <input type="password" id="projectPasswordInput" placeholder="Password" />
-            <div class="actions">
-                <button class="btn-secondary" onclick="closePasswordModal()">Cancel</button>
-                <button class="btn-primary" onclick="verifyProjectPassword()"><i class="fas fa-unlock"></i> Unlock</button>
+    <!-- MESSAGE SLIDER SECTION -->
+    <section id="message-slider-page" class="page">
+        <div id="slider-particles"
+            style="position: absolute; width: 100%; height: 100%; top:0; left:0; pointer-events: none;"></div>
+        <div class="slider-card">
+            <div id="step-1" class="step-content active">
+                <h2 class="step-text">It's Your Special Day</h2>
+                <button class="btn-neon" onclick="nextStep(2)">Next</button>
             </div>
-            <div id="passwordError" style="color:#f87171;font-size:13px;margin-top:10px;display:none;">Incorrect password.</div>
+            <div id="step-2" class="step-content">
+                <h2 class="step-text">Have a look at it Madam Jii</h2>
+                <button class="btn-neon" onclick="nextStep(3)">Next</button>
+            </div>
+            <div id="step-3" class="step-content">
+                <h2 class="step-text">Ready for your surprise?</h2>
+                <button class="btn-neon" onclick="finishSlider()">Let's Go</button>
+            </div>
+            <div class="slider-dots">
+                <div id="dot-1" class="dot active"></div>
+                <div id="dot-2" class="dot"></div>
+                <div id="dot-3" class="dot"></div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <!-- ===== MAIN CONTAINER ===== -->
-    <div class="container" id="appContainer">
+    <!-- CELEBRATION SECTION -->
+    <section id="celebration-page" class="page">
+        <div class="fairy-lights-container" id="fairy-lights-container">
+            <svg class="wire-svg" preserveAspectRatio="none" viewBox="0 0 1000 150">
+                <path id="wire-path" d="M0,20 Q100,60 200,20 T400,20 T600,20 T800,20 T1000,20" />
+            </svg>
+        </div>
+        <div class="glass-container" style="background: transparent; border: none; box-shadow: none;">
+            <h2 id="celeb-hint" style="font-size: 1.5rem; margin-bottom: 30px; letter-spacing: 2px;">The Stage is Set...
+            </h2>
+            <button id="celeb-master-btn" class="btn-neon" onclick="celebFlow()">💡 Turn On Lights</button>
+        </div>
+    </section>
 
-        <!-- HEADER -->
-        <header class="header">
-            <a class="logo" onclick="showHome()">
-                <i class="fas fa-gift"></i>
-                <span>BirthdayMemory</span>
-            </a>
-            <ul class="nav-links">
-                <li><a onclick="showHome()">Home</a></li>
-                <li><a onclick="showAdmin()">Admin</a></li>
-                <li><a onclick="showHome()">Projects</a></li>
-            </ul>
-        </header>
-
-        <!-- ===== HOME / PROJECTS ===== -->
-        <section class="hero" id="homeSection">
-            <div class="hero-badge" data-aos="fade-down">
-                <i class="fas fa-star"></i> Celebrate in Style
-            </div>
-            <h1 data-aos="fade-up">Birthday Memory<br />QR</h1>
-            <p data-aos="fade-up" data-aos-delay="100">
-                Create a private birthday memory page with a QR code. Share it with loved ones and celebrate together.
-            </p>
-            <div class="hero-actions" data-aos="fade-up" data-aos-delay="200">
-                <button class="btn-primary" onclick="showAdmin()"><i class="fas fa-plus-circle"></i> Create Your Birthday</button>
-                <button class="btn-secondary" onclick="showDemo()"><i class="fas fa-play"></i> View Demo</button>
-            </div>
-
-            <!-- Projects Grid -->
-            <div id="projectsContainer" style="width:100%;">
-                <h2 style="text-align:left;margin:20px 0 10px;font-weight:600;">🎂 Birthday Projects</h2>
-                <div class="projects-grid" id="projectsGrid"></div>
-            </div>
-        </section>
-
-        <!-- ===== ADMIN SECTION ===== -->
-        <section class="admin-section" id="adminSection">
-            <!-- Login -->
-            <div class="admin-login" id="adminLogin">
-                <h2><i class="fas fa-lock"></i> Admin Login</h2>
-                <input type="text" id="adminId" placeholder="Admin ID" value="M8GAN" />
-                <input type="password" id="adminPassword" placeholder="Password" value="m8gan1234" />
-                <button class="btn-primary" onclick="adminLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
-                <div class="error" id="loginError"></div>
-            </div>
-
-            <!-- Dashboard -->
-            <div class="admin-dashboard" id="adminDashboard">
-                <div class="admin-header">
-                    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
-                    <div>
-                        <button class="btn-secondary" onclick="showAddProject()"><i class="fas fa-plus"></i> Add Project</button>
-                        <button class="btn-secondary" onclick="adminLogout()" style="margin-left:8px;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                    </div>
+    <!-- CURTAIN SECTION -->
+    <section id="curtain-page" class="page" style="padding: 0;">
+        <div class="stage" id="stage">
+            <div class="curtain-panel curtain-left"></div>
+            <div class="curtain-panel curtain-right"></div>
+            <div class="secret-content">
+                <div class="message-card" id="message-card">
+                    <h2
+                        style="font-family: 'Dancing Script'; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--accent); margin-bottom: 20px;">
+                        My Dearest Riddhi,</h2>
+                    <p style="font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.8; color: rgba(255,255,255,0.8);">
+                        Today isn't just a date on the calendar; it's a celebration of the light you bring into my life.
+                        Every moment with you is like a frame from a beautiful movie, and I'm so lucky to be your
+                        co-star.
+                        May this year be filled with as much magic as you give to everyone around you.
+                    </p>
+                    <button class="btn-neon" style="margin-top: 40px; animation: none;"
+                        onclick="transitionTo('gallery-page')">Our Memories</button>
                 </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Add/Edit Form -->
-                <div class="admin-form" id="projectForm">
-                    <h3 id="formTitle">Create New Birthday Project</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="fName" placeholder="e.g. John Doe" />
-                        </div>
-                        <div class="form-group">
-                            <label>Nickname</label>
-                            <input type="text" id="fNick" placeholder="e.g. Johnny" />
-                        </div>
-                        <div class="form-group">
-                            <label>Date of Birth</label>
-                            <input type="date" id="fDob" />
-                        </div>
-                        <div class="form-group">
-                            <label>Unlock Date & Time *</label>
-                            <input type="datetime-local" id="fUnlock" />
-                        </div>
-                        <div class="form-group full">
-                            <label>Birthday Message</label>
-                            <textarea id="fMessage" placeholder="Write a heartfelt message..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Theme Color</label>
-                            <input type="color" id="fColor" value="#6c3ce0" />
-                        </div>
-                        <div class="form-group">
-                            <label>Background Music (URL)</label>
-                            <input type="url" id="fMusic" placeholder="https://example.com/song.mp3" />
-                        </div>
-                        <div class="form-group">
-                            <label>View Password (leave blank for public)</label>
-                            <input type="text" id="fPassword" placeholder="Optional password" />
-                        </div>
-                        <div class="form-group full">
-                            <label>Photos</label>
-                            <div class="file-upload" onclick="document.getElementById('photoInput').click()">
-                                <i class="fas fa-cloud-upload-alt fa-2x"></i>
-                                <p>Click to upload photos</p>
-                                <input type="file" id="photoInput" multiple accept="image/*" onchange="handlePhotos(event)" />
-                            </div>
-                            <div class="preview-grid" id="photoPreview"></div>
-                        </div>
-                        <div class="form-group full">
-                            <label>Videos</label>
-                            <div class="file-upload" onclick="document.getElementById('videoInput').click()">
-                                <i class="fas fa-cloud-upload-alt fa-2x"></i>
-                                <p>Click to upload videos</p>
-                                <input type="file" id="videoInput" multiple accept="video/*" onchange="handleVideos(event)" />
-                            </div>
-                            <div class="preview-grid" id="videoPreview"></div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-primary" id="formSubmitBtn" onclick="saveProject()"><i class="fas fa-save"></i> Save Project</button>
-                        <button class="btn-secondary" onclick="cancelForm()">Cancel</button>
-                    </div>
+    <!-- UPDATED GALLERY SECTION -->
+    <section id="gallery-page" class="page">
+        <!-- Persistent Background Elements -->
+        <div id="gallery-bg-elements"
+            style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;">
+        </div>
+
+        <h2 class="gallery-title">Moments in Time</h2>
+        <div class="gallery-grid">
+            <!-- Memory 1 -->
+            <div class="memory-card">
+                <img src="https://wallpapers.oneindia.com/ph-1024x768/2018/12/rashi-khanna_154512628300.jpg" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">You make my world beautiful ❤️</p>
                 </div>
-
-                <!-- Project List -->
-                <h3>Your Projects</h3>
-                <div class="project-list" id="projectList"></div>
             </div>
-        </section>
-
-        <!-- ===== PROJECT VIEW (Celebration) ===== -->
-        <section class="project-view" id="projectView">
-            <button class="btn-secondary back-btn" onclick="closeProjectView()"><i class="fas fa-arrow-left"></i> Back</button>
-            <div class="celebration" id="celebrationContent">
-                <!-- Dynamically filled -->
+            <!-- Memory 2 -->
+            <div class="memory-card">
+                <img src="https://w0.peakpx.com/wallpaper/506/297/HD-wallpaper-rashi-khanna-actress-telugu.jpg" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">Our memories are forever ✨</p>
+                </div>
             </div>
-        </section>
+            <!-- Memory 3 -->
+            <div class="memory-card">
+                <img src="https://www.cinejosh.com/gallereys/actress/normal/actress_rashi_khanna_photos_1810180429/actress_rashi_khanna_photos_1810180429_018.jpg" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">My favorite smile in the world 💖</p>
+                </div>
+            </div>
+            <!-- Memory 4 -->
+            <div class="memory-card">
+                <img src="https://preview.redd.it/rashi-khanna-shes-always-casted-as-the-pretty-and-popular-v0-mbxwg6ea5k8b1.jpg?width=451&format=pjpg&auto=webp&s=ebeea7d8d9eac6448206bbf4700017eefe849aeb" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">Every second with you is a gift 🎁</p>
+                </div>
+            </div>
+            <!-- Memory 5 -->
+            <div class="memory-card">
+                <img src="https://www.elahe.in/cdn/shop/files/285_3ede1728-06b6-402c-ba6f-f72198e79e38_2048x.jpg?v=1737011065" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">To many more adventures together 🥂</p>
+                </div>
+            </div>
+            <!-- Memory 6 -->
+            <div class="memory-card">
+                <img src="https://i.pinimg.com/originals/00/be/96/00be961bf30283b844a08eced6c47baa.jpg" alt="Memory"
+                    class="memory-image">
+                <div class="memory-hover-overlay">
+                    <p class="hover-message">Always & Forever 🌹</p>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; padding: 100px 0;">
+            <button class="btn-neon" onclick="location.reload()">Replay The Magic</button>
+        </div>
+    </section>
 
-    </div>
+    <audio id="birthday-audio" loop>
+        <source src="/song/Jhol Ringtone Download Female Voice.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- ===== SCRIPTS ===== -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // ============================================================
-        // DATA LAYER (localStorage)
-        // ============================================================
-        const STORAGE_KEY = 'birthday_projects';
-        let projects = [];
-        let editingProjectId = null;
-        let photoFiles = []; // base64 strings
-        let videoFiles = []; // base64 strings
+        // --- Navigation Logic ---
+        function transitionTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
 
-        function loadProjects() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (data) {
-                projects = JSON.parse(data);
-            } else {
-                // Seed with a demo project
-                const demo = {
-                    id: 'demo1',
-                    name: 'Alice Wonderland',
-                    nickname: 'Ali',
-                    dob: '2000-06-01',
-                    unlock: new Date(Date.now() + 3600000).toISOString(), // 1 hour from now
-                    message: 'Happy Birthday Alice! 🎉 May your day be as magical as you are.',
-                    color: '#ec4899',
-                    music: '',
-                    password: '',
-                    photos: [],
-                    videos: []
-                };
-                projects = [demo];
-                saveProjects();
-            }
-        }
-
-        function saveProjects() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-        }
-
-        function getProjectById(id) {
-            return projects.find(p => p.id === id);
-        }
-
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-        }
-
-        // ============================================================
-        // UI RENDER
-        // ============================================================
-        function renderProjects() {
-            const grid = document.getElementById('projectsGrid');
-            if (!grid) return;
-            if (projects.length === 0) {
-                grid.innerHTML =
-                    `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">No projects yet. <a onclick="showAdmin()" style="color:var(--primary-light);cursor:pointer;">Create one now!</a></p>`;
-                return;
-            }
-            grid.innerHTML = projects.map(p => {
-                const qrUrl =
-                    `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(window.location.origin + window.location.pathname + '?project=' + p.id)}`;
-                const hasPassword = p.password && p.password.trim() !== '';
-                return `
-                    <div class="project-card" data-aos="fade-up">
-                        <div class="qr-small"><img src="${qrUrl}" alt="QR" /></div>
-                        ${hasPassword ? '<span class="locked-badge"><i class="fas fa-lock"></i> Locked</span>' : ''}
-                        <div class="project-name">${p.name}</div>
-                        <div class="project-nick">${p.nickname || ''}</div>
-                        <div class="project-date"><i class="fas fa-calendar-alt"></i> ${new Date(p.unlock).toLocaleString()}</div>
-                        <div class="project-actions">
-                            <button class="btn-primary" onclick="openProject('${p.id}')" style="flex:2;"><i class="fas fa-eye"></i> View</button>
-                            <button class="btn-secondary" onclick="copyProjectLink('${p.id}')" style="flex:1;"><i class="fas fa-copy"></i></button>
-                            <button class="btn-secondary" onclick="downloadProjectQR('${p.id}')" style="flex:1;"><i class="fas fa-download"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderAdminProjectList() {
-            const list = document.getElementById('projectList');
-            if (!list) return;
-            if (projects.length === 0) {
-                list.innerHTML = `<p style="color:var(--text-muted);">No projects created yet.</p>`;
-                return;
-            }
-            list.innerHTML = projects.map(p => `
-                <div class="project-item">
-                    <div class="item-header">
-                        <h4>${p.name}</h4>
-                        <span class="badge">${p.password ? '🔒' : '🌐'}</span>
-                    </div>
-                    <div class="item-details">${p.nickname || ''} · ${new Date(p.unlock).toLocaleDateString()}</div>
-                    <div class="item-actions">
-                        <button class="btn-secondary" onclick="editProject('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn-danger" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ============================================================
-        // NAVIGATION
-        // ============================================================
-        function showHome() {
-            document.getElementById('homeSection').style.display = 'flex';
-            document.getElementById('adminSection').classList.remove('active');
-            document.getElementById('projectView').classList.remove('active');
-            renderProjects();
-            AOS.refresh();
-        }
-
-        function showAdmin() {
-            document.getElementById('homeSection').style.display = 'none';
-            document.getElementById('adminSection').classList.add('active');
-            document.getElementById('projectView').classList.remove('active');
-            // Check login status
-            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-                document.getElementById('adminLogin').style.display = 'none';
-                document.getElementById('adminDashboard').classList.add('active');
-                renderAdminProjectList();
-            } else {
-                document.getElementById('adminLogin').style.display = 'block';
-                document.getElementById('adminDashboard').classList.remove('active');
-            }
-        }
-
-        function showDemo() {
-            // Just open the demo project
-            const demo = projects.find(p => p.id === 'demo1');
-            if (demo) openProject('demo1');
-            else {
-                showToast('Demo project not found. Create one!', 'error');
-            }
-        }
-
-        // ============================================================
-        // ADMIN LOGIN
-        // ============================================================
-        function adminLogin() {
-            const id = document.getElementById('adminId').value.trim();
-            const pass = document.getElementById('adminPassword').value.trim();
-            if (id === 'M8GAN' && pass === 'm8gan1234') {
-                sessionStorage.setItem('adminLoggedIn', 'true');
-                document.getElementById('loginError').textContent = '';
-                showAdmin();
-                showToast('Welcome Admin!', 'success');
-            } else {
-                document.getElementById('loginError').textContent = 'Invalid ID or Password.';
-            }
-        }
-
-        function adminLogout() {
-            sessionStorage.removeItem('adminLoggedIn');
-            document.getElementById('adminLogin').style.display = 'block';
-            document.getElementById('adminDashboard').classList.remove('active');
-            showToast('Logged out.', 'success');
-        }
-
-        // ============================================================
-        // PROJECT FORM
-        // ============================================================
-        function showAddProject() {
-            if (!sessionStorage.getItem('adminLoggedIn')) {
-                showToast('Please login first.', 'error');
-                return;
-            }
-            editingProjectId = null;
-            document.getElementById('formTitle').textContent = 'Create New Birthday Project';
-            document.getElementById('projectForm').classList.add('active');
-            document.getElementById('fName').value = '';
-            document.getElementById('fNick').value = '';
-            document.getElementById('fDob').value = '';
-            document.getElementById('fUnlock').value = '';
-            document.getElementById('fMessage').value = '';
-            document.getElementById('fColor').value = '#6c3ce0';
-            document.getElementById('fMusic').value = '';
-            document.getElementById('fPassword').value = '';
-            photoFiles = [];
-            videoFiles = [];
-            document.getElementById('photoPreview').innerHTML = '';
-            document.getElementById('videoPreview').innerHTML = '';
-            document.getElementById('formSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Save Project';
-        }
-
-        function cancelForm() {
-            document.getElementById('projectForm').classList.remove('active');
-        }
-
-        function editProject(id) {
-            const p = getProjectById(id);
-            if (!p) return;
-            editingProjectId = id;
-            document.getElementById('formTitle').textContent = 'Edit Birthday Project';
-            document.getElementById('projectForm').classList.add('active');
-            document.getElementById('fName').value = p.name || '';
-            document.getElementById('fNick').value = p.nickname || '';
-            document.getElementById('fDob').value = p.dob || '';
-            document.getElementById('fUnlock').value = p.unlock ? p.unlock.slice(0, 16) : '';
-            document.getElementById('fMessage').value = p.message || '';
-            document.getElementById('fColor').value = p.color || '#6c3ce0';
-            document.getElementById('fMusic').value = p.music || '';
-            document.getElementById('fPassword').value = p.password || '';
-            photoFiles = p.photos || [];
-            videoFiles = p.videos || [];
-            renderPreview('photoPreview', photoFiles, 'image');
-            renderPreview('videoPreview', videoFiles, 'video');
-            document.getElementById('formSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Update Project';
-        }
-
-        function handlePhotos(e) {
-            const files = e.target.files;
-            for (let f of files) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    photoFiles.push(ev.target.result);
-                    renderPreview('photoPreview', photoFiles, 'image');
-                };
-                reader.readAsDataURL(f);
-            }
-            e.target.value = '';
-        }
-
-        function handleVideos(e) {
-            const files = e.target.files;
-            for (let f of files) {
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    videoFiles.push(ev.target.result);
-                    renderPreview('videoPreview', videoFiles, 'video');
-                };
-                reader.readAsDataURL(f);
-            }
-            e.target.value = '';
-        }
-
-        function renderPreview(containerId, files, type) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = files.map((src, idx) => {
-                if (type === 'image') {
-                    return `<div class="preview-item"><img src="${src}" /><button class="remove" onclick="removeFile('${containerId}',${idx})">×</button></div>`;
-                } else {
-                    return `<div class="preview-item"><video src="${src}" muted></video><button class="remove" onclick="removeFile('${containerId}',${idx})">×</button></div>`;
-                }
-            }).join('');
-        }
-
-        function removeFile(containerId, idx) {
-            if (containerId === 'photoPreview') {
-                photoFiles.splice(idx, 1);
-                renderPreview('photoPreview', photoFiles, 'image');
-            } else {
-                videoFiles.splice(idx, 1);
-                renderPreview('videoPreview', videoFiles, 'video');
-            }
-        }
-
-        function saveProject() {
-            const name = document.getElementById('fName').value.trim();
-            const unlock = document.getElementById('fUnlock').value;
-            if (!name || !unlock) {
-                showToast('Name and Unlock Date/Time are required.', 'error');
-                return;
-            }
-
-            const projectData = {
-                name,
-                nickname: document.getElementById('fNick').value.trim(),
-                dob: document.getElementById('fDob').value,
-                unlock: new Date(unlock).toISOString(),
-                message: document.getElementById('fMessage').value.trim(),
-                color: document.getElementById('fColor').value,
-                music: document.getElementById('fMusic').value.trim(),
-                password: document.getElementById('fPassword').value.trim(),
-                photos: photoFiles,
-                videos: videoFiles
-            };
-
-            if (editingProjectId) {
-                const idx = projects.findIndex(p => p.id === editingProjectId);
-                if (idx !== -1) {
-                    projects[idx] = { ...projects[idx], ...projectData };
-                }
-                showToast('Project updated!', 'success');
-            } else {
-                projectData.id = generateId();
-                projects.push(projectData);
-                showToast('Project created!', 'success');
-            }
-            saveProjects();
-            cancelForm();
-            renderAdminProjectList();
-            renderProjects();
-        }
-
-        function deleteProject(id) {
-            if (confirm('Delete this project permanently?')) {
-                projects = projects.filter(p => p.id !== id);
-                saveProjects();
-                renderAdminProjectList();
-                renderProjects();
-                showToast('Project deleted.', 'success');
-            }
-        }
-
-        // ============================================================
-        // PROJECT VIEW (Celebration)
-        // ============================================================
-        let currentProject = null;
-
-        function openProject(id) {
-            const p = getProjectById(id);
-            if (!p) {
-                showToast('Project not found.', 'error');
-                return;
-            }
-            // Check password
-            if (p.password && p.password.trim() !== '') {
-                // Show password modal
-                currentProject = p;
-                document.getElementById('passwordModal').classList.add('active');
-                document.getElementById('projectPasswordInput').value = '';
-                document.getElementById('passwordError').style.display = 'none';
-                return;
-            }
-            // No password, open directly
-            renderCelebration(p);
-        }
-
-        function verifyProjectPassword() {
-            const input = document.getElementById('projectPasswordInput').value;
-            if (input === currentProject.password) {
-                document.getElementById('passwordModal').classList.remove('active');
-                renderCelebration(currentProject);
-            } else {
-                document.getElementById('passwordError').style.display = 'block';
-            }
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').classList.remove('active');
-            currentProject = null;
-        }
-
-        function renderCelebration(p) {
-            document.getElementById('homeSection').style.display = 'none';
-            document.getElementById('adminSection').classList.remove('active');
-            document.getElementById('projectView').classList.add('active');
-
-            const container = document.getElementById('celebrationContent');
-            const color = p.color || '#6c3ce0';
-            const isUnlocked = new Date(p.unlock) <= new Date();
-
-            // Countdown or celebration message
-            let countdownHtml = '';
-            if (!isUnlocked) {
-                countdownHtml = `
-                    <div class="countdown-wrapper">
-                        <div class="countdown-grid" id="projectCountdown">
-                            <div class="countdown-item"><div class="number" id="pDays">00</div><div class="label">Days</div></div>
-                            <div class="countdown-item"><div class="number" id="pHours">00</div><div class="label">Hours</div></div>
-                            <div class="countdown-item"><div class="number" id="pMinutes">00</div><div class="label">Minutes</div></div>
-                            <div class="countdown-item"><div class="number" id="pSeconds">00</div><div class="label">Seconds</div></div>
-                        </div>
-                        <p style="color:var(--text-muted);font-size:14px;">Countdown to celebration!</p>
-                    </div>
-                `;
-            } else {
-                countdownHtml = `
-                    <div style="background:var(--glass);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
-                        <h2 style="color:${color};">🎉 It's Celebration Time! 🎉</h2>
-                        <p style="color:var(--text-secondary);">The birthday is now unlocked!</p>
-                    </div>
-                `;
-            }
-
-            // Gallery
-            let galleryHtml = '';
-            const allMedia = [...p.photos, ...p.videos];
-            if (allMedia.length > 0) {
-                galleryHtml = `
-                    <h3 style="margin-top:20px;">📸 Memories</h3>
-                    <div class="gallery">
-                        ${allMedia.map(src => {
-                            if (src.startsWith('data:image')) {
-                                return `<div class="media-item"><img src="${src}" loading="lazy" /></div>`;
-                            } else {
-                                return `<div class="media-item"><video src="${src}" controls muted></video></div>`;
-                            }
-                        }).join('')}
-                    </div>
-                `;
-            }
-
-            // Music
-            let musicHtml = '';
-            if (p.music) {
-                musicHtml = `
-                    <div style="margin:16px 0;">
-                        <audio controls autoplay loop style="width:100%;max-width:300px;">
-                            <source src="${p.music}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = `
-                <h1 style="color:${color};">Happy Birthday ${p.name}!</h1>
-                ${p.nickname ? `<div class="sub">🎈 ${p.nickname} 🎈</div>` : ''}
-                ${countdownHtml}
-                ${musicHtml}
-                <div class="message-box" style="border-color:${color};">
-                    <h3>💌 Birthday Message</h3>
-                    <p>${p.message || 'Wishing you a wonderful day filled with joy and love!'}</p>
-                </div>
-                ${galleryHtml}
-                <div style="margin-top:20px;">
-                    <button class="btn-secondary" onclick="closeProjectView()"><i class="fas fa-arrow-left"></i> Back</button>
-                </div>
-            `;
-
-            // Start countdown if not unlocked
-            if (!isUnlocked) {
-                startProjectCountdown(p.unlock);
-            }
-
-            // Apply theme color to some elements
-            document.querySelectorAll('.celebration .countdown-item .number').forEach(el => {
-                el.style.background = `linear-gradient(135deg, #fff, ${color})`;
-                el.style.webkitBackgroundClip = 'text';
-                el.style.webkitTextFillColor = 'transparent';
-            });
-        }
-
-        function startProjectCountdown(unlockISO) {
-            const target = new Date(unlockISO).getTime();
-            const interval = setInterval(() => {
-                const now = new Date().getTime();
-                const diff = target - now;
-                if (diff <= 0) {
-                    clearInterval(interval);
-                    // Refresh celebration to show unlocked
-                    if (currentProject) renderCelebration(currentProject);
-                    return;
-                }
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                const pDays = document.getElementById('pDays');
-                const pHours = document.getElementById('pHours');
-                const pMinutes = document.getElementById('pMinutes');
-                const pSeconds = document.getElementById('pSeconds');
-                if (pDays) pDays.textContent = String(days).padStart(2, '0');
-                if (pHours) pHours.textContent = String(hours).padStart(2, '0');
-                if (pMinutes) pMinutes.textContent = String(minutes).padStart(2, '0');
-                if (pSeconds) pSeconds.textContent = String(seconds).padStart(2, '0');
-            }, 1000);
-        }
-
-        function closeProjectView() {
-            document.getElementById('projectView').classList.remove('active');
-            document.getElementById('homeSection').style.display = 'flex';
-            renderProjects();
-            AOS.refresh();
-        }
-
-        // ============================================================
-        // QR & SHARING
-        // ============================================================
-        function getProjectLink(id) {
-            return window.location.origin + window.location.pathname + '?project=' + id;
-        }
-
-        function copyProjectLink(id) {
-            const link = getProjectLink(id);
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(link).then(() => {
-                    showToast('Link copied!', 'success');
-                }).catch(() => fallbackCopy(link));
-            } else {
-                fallbackCopy(link);
-            }
-        }
-
-        function fallbackCopy(text) {
-            const input = document.createElement('input');
-            input.value = text;
-            document.body.appendChild(input);
-            input.select();
-            try {
-                document.execCommand('copy');
-                showToast('Link copied!', 'success');
-            } catch {
-                showToast('Could not copy.', 'error');
-            }
-            document.body.removeChild(input);
-        }
-
-        function downloadProjectQR(id) {
-            const link = getProjectLink(id);
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
-            const a = document.createElement('a');
-            a.href = qrUrl;
-            a.download = `qr-${id}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            showToast('QR downloaded!', 'success');
-        }
-
-        // ============================================================
-        // TOAST
-        // ============================================================
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toast-message');
-            msg.textContent = message;
-            toast.className = 'toast ' + type;
-            toast.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-            toast.classList.add('show');
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ============================================================
-        // PARTICLES (same as before)
-        // ============================================================
-        (function() {
-            const canvas = document.getElementById('particles-canvas');
-            const ctx = canvas.getContext('2d');
-            let w, h;
-            const particles = [];
-            const count = 70;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.size = Math.random() * 2 + 0.5;
-                    this.speedX = (Math.random() - 0.5) * 0.3;
-                    this.speedY = (Math.random() - 0.5) * 0.3;
-                    this.opacity = Math.random() * 0.5 + 0.1;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.x < 0 || this.x > w) this.speedX *= -1;
-                    if (this.y < 0 || this.y > h) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(139, 92, 246, ${this.opacity})`;
-                    ctx.fill();
-                }
-            }
-
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 120) {
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(139, 92, 246, ${0.08 * (1 - dist / 120)})`;
-                            ctx.lineWidth = 0.6;
-                            ctx.stroke();
-                        }
-                    }
-                }
-                requestAnimationFrame(animate);
-            }
-            animate();
-        })();
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 800);
-            loadProjects();
-            renderProjects();
-            AOS.init({ duration: 800, once: true, offset: 60 });
-
-            // Check for project query param
-            const params = new URLSearchParams(window.location.search);
-            const projectId = params.get('project');
-            if (projectId) {
+            if (pageId === 'curtain-page') {
                 setTimeout(() => {
-                    openProject(projectId);
-                }, 500);
+                    document.getElementById('stage').classList.add('open');
+                    startSparkles('message-card');
+                }, 1000);
             }
-        });
+            if (pageId === 'gallery-page') {
+                startGalleryEffects();
+            }
+        }
 
-        // ============================================================
-        // GLOBAL ACCESS
-        // ============================================================
-        window.showHome = showHome;
-        window.showAdmin = showAdmin;
-        window.showDemo = showDemo;
-        window.adminLogin = adminLogin;
-        window.adminLogout = adminLogout;
-        window.showAddProject = showAddProject;
-        window.cancelForm = cancelForm;
-        window.editProject = editProject;
-        window.saveProject = saveProject;
-        window.deleteProject = deleteProject;
-        window.handlePhotos = handlePhotos;
-        window.handleVideos = handleVideos;
-        window.removeFile = removeFile;
-        window.openProject = openProject;
-        window.closeProjectView = closeProjectView;
-        window.verifyProjectPassword = verifyProjectPassword;
-        window.closePasswordModal = closePasswordModal;
-        window.copyProjectLink = copyProjectLink;
-        window.downloadProjectQR = downloadProjectQR;
-        window.showToast = showToast;
+        // --- Heart Particles (Shared) ---
+        function createHeart(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const heart = document.createElement('div');
+            heart.style.position = 'absolute';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.bottom = '-10vh';
+            heart.style.color = 'var(--accent)';
+            heart.innerHTML = '❤️';
+            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            heart.style.animation = `floatHeart ${Math.random() * 3 + 3}s linear forwards`;
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+
+        setInterval(() => createHeart('particle-container'), 300);
+        setInterval(() => createHeart('slider-particles'), 400);
+
+        // --- Slider Logic ---
+        function nextStep(step) {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            document.getElementById(`dot-${step}`).classList.add('active');
+        }
+
+        function finishSlider() {
+            transitionTo('celebration-page');
+        }
+
+        // --- Celebration Flow ---
+        let celebStep = 1;
+        function celebFlow() {
+            const btn = document.getElementById('celeb-master-btn');
+            const hint = document.getElementById('celeb-hint');
+            const page = document.getElementById('celebration-page');
+            const lights = document.getElementById('fairy-lights-container');
+
+            if (celebStep === 1) {
+                page.classList.add('bright');
+                lights.style.opacity = '1';
+                hint.innerText = "Music makes it better...";
+                btn.innerText = "🎵 Play Music";
+                celebStep = 2;
+            } else if (celebStep === 2) {
+                const audio = document.getElementById('birthday-audio');
+                audio.play().catch(() => { });
+                hint.innerText = "Let the colors fly!";
+                btn.innerText = "🎈 Fly Balloons";
+                celebStep = 3;
+            } else if (celebStep === 3) {
+                spawnBalloons(document.body);
+                hint.innerText = "Almost there...";
+                btn.innerText = "✨ Show The Message";
+                celebStep = 4;
+            } else {
+                transitionTo('curtain-page');
+            }
+        }
+
+        // --- Realistic Balloons Logic ---
+        function spawnBalloons(targetContainer) {
+            const colorGradients = [
+                ['#ff2d55', '#800020'], ['#74b9ff', '#0984e3'],
+                ['#55efc4', '#00b894'], ['#ffeaa7', '#fdcb6e'],
+                ['#a29bfe', '#6c5ce7'], ['#ff9ff3', '#f368e0']
+            ];
+
+            const interval = setInterval(() => {
+                const b = document.createElement('div');
+                const shine = document.createElement('div');
+                b.classList.add('balloon');
+                shine.classList.add('balloon-shine');
+                const gradient = colorGradients[Math.floor(Math.random() * colorGradients.length)];
+                b.style.left = Math.random() * 95 + 'vw';
+                b.style.background = `radial-gradient(circle at 70% 30%, ${gradient[0]}, ${gradient[1]})`;
+                b.style.boxShadow = `inset -10px -10px 20px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2)`;
+                b.appendChild(shine);
+                targetContainer.appendChild(b);
+                setTimeout(() => b.remove(), 8000);
+            }, 400);
+            setTimeout(() => clearInterval(interval), 6000);
+        }
+
+        // --- Gallery Special Effects ---
+        function startGalleryEffects() {
+            const container = document.getElementById('gallery-bg-elements');
+            // Spawn continuous balloons in background of gallery
+            setInterval(() => {
+                if (document.getElementById('gallery-page').classList.contains('active')) {
+                    spawnBalloons(container);
+                }
+            }, 8000);
+
+            // Random sparkles in gallery
+            setInterval(() => {
+                if (document.getElementById('gallery-page').classList.contains('active')) {
+                    const s = document.createElement('div');
+                    s.classList.add('gallery-sparkle');
+                    s.style.width = s.style.height = (Math.random() * 6 + 2) + 'px';
+                    s.style.top = Math.random() * 100 + '%';
+                    s.style.left = Math.random() * 100 + '%';
+                    container.appendChild(s);
+                    setTimeout(() => s.remove(), 2000);
+                }
+            }, 200);
+        }
+
+        function startSparkles(targetId) {
+            const card = document.getElementById(targetId);
+            setInterval(() => {
+                const s = document.createElement('div');
+                s.classList.add('sparkle-particle');
+                s.style.width = s.style.height = (Math.random() * 4 + 2) + 'px';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.left = Math.random() * 100 + '%';
+                card.appendChild(s);
+                setTimeout(() => s.remove(), 1000);
+            }, 50);
+        }
+
+        function initFairyLights() {
+            const container = document.getElementById('fairy-lights-container');
+            const path = document.getElementById('wire-path');
+            const pathLength = path.getTotalLength();
+            const bulbCount = 25;
+            for (let i = 0; i <= bulbCount; i++) {
+                const distance = (i / bulbCount) * pathLength;
+                const point = path.getPointAtLength(distance);
+                const bulb = document.createElement('div');
+                bulb.classList.add('bulb-teardrop');
+                bulb.style.left = `${(point.x / 1000) * 100}%`;
+                bulb.style.top = `${point.y}px`;
+                bulb.style.setProperty('--d', `${0.5 + Math.random() * 2}s`);
+                container.appendChild(bulb);
+            }
+        }
+
+        window.onload = () => {
+            initFairyLights();
+        };
     </script>
 </body>
+
 </html>
+
+
