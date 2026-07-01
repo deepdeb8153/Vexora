@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Ishani! 🎉</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -163,10 +163,10 @@
             width: 75px;
             height: 95px;
             border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-            z-index: 9999; /* Always on very top of everything */
+            z-index: 9999;
             cursor: pointer;
             box-shadow: inset -10px -15px 20px rgba(0,0,0,0.35), inset 8px 10px 15px rgba(255,255,255,0.6), 0 10px 20px rgba(0,0,0,0.3);
-            animation: floatUp 8s linear forwards; /* Smooth balanced speed for easy tapping */
+            animation: floatUp 8s linear forwards;
         }
         .balloon::before {
             content: "";
@@ -247,7 +247,7 @@
         .card-back p { font-size: 1.25rem; line-height: 1.8; font-weight: 600; color: #501239; font-family: 'Poppins', sans-serif; text-align: center; }
 
         /* ==========================================================================
-           PAGE 3: 3D ROTATING MEMORY GALLERY (CLEAN NO FOOTER TEXT)
+           PAGE 3: 3D ROTATING MEMORY GALLERY
            ========================================================================== */
         #page3 { background: radial-gradient(circle, #1f1430 0%, #090612 100%); }
         .gallery-stage { perspective: 1100px; width: 100%; height: 420px; display: flex; align-items: center; justify-content: center; position: relative; }
@@ -421,14 +421,14 @@
         <h2 style="margin-bottom:40px; font-weight:600; letter-spacing: 1px; color: #ffbcde;">✨ Beautiful Memories Gallery ✨</h2>
         <div class="gallery-stage">
             <div class="carousel-3d" id="carousel">
-                <div class="carousel-item"><img src="1000375085.jpg" alt="Ishani 1"></div>
-                <div class="carousel-item"><img src="1000370048.webp" alt="Ishani 2"></div>
-                <div class="carousel-item"><img src="1000369838.jpg" alt="Ishani 3"></div>
-                <div class="carousel-item"><img src="1000369850.jpg" alt="Ishani 4"></div>
-                <div class="carousel-item"><img src="1000369843.jpg" alt="Ishani 5"></div>
-                <div class="carousel-item"><img src="1000369802.jpg" alt="Ishani 6"></div>
-                <div class="carousel-item"><img src="1000369798.jpg" alt="Ishani 7"></div>
-                <div class="carousel-item"><img src="1000369779.jpg" alt="Ishani 8"></div>
+                <div class="carousel-item"><img src="photo1.jpg" alt="Ishani 1"></div>
+                <div class="carousel-item"><img src="photo2.jpg" alt="Ishani 2"></div>
+                <div class="carousel-item"><img src="photo3.jpg" alt="Ishani 3"></div>
+                <div class="carousel-item"><img src="photo4.jpg" alt="Ishani 4"></div>
+                <div class="carousel-item"><img src="photo5.jpg" alt="Ishani 5"></div>
+                <div class="carousel-item"><img src="photo6.jpg" alt="Ishani 6"></div>
+                <div class="carousel-item"><img src="photo7.jpg" alt="Ishani 7"></div>
+                <div class="carousel-item"><img src="photo8.jpg" alt="Ishani 8"></div>
             </div>
         </div>
         <button class="final-next-btn" style="margin-top:40px;" onclick="navigateTo(4)">Final Message <i class="fas fa-arrow-right"></i></button>
@@ -468,7 +468,6 @@
         }
 
         function goToStep(stepNum) {
-            // REMOVE BANNER IF GOING TO STEP 2 OR BEYOND
             if (stepNum >= 2) {
                 document.getElementById('birthday-banner').classList.remove('show');
             }
@@ -486,9 +485,7 @@
             if(!isPlaying) toggleMusic();
         }
 
-        /* FIXED: BRIGHT HIGH-VISIBILITY INSTANT BALLOONS ENGINE */
         function executeBalloons() {
-            // High saturation bright color palette
             const colors = ['#ff0055', '#00f5ff', '#ffcc00', '#ff00aa', '#aa00ff', '#33ff33', '#ff5500'];
             
             for(let i=0; i<22; i++) {
@@ -497,9 +494,7 @@
                 b.style.left = (Math.random() * 82) + 'vw';
                 b.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 
-                // Varied initial staggered entry points from bottom area
                 b.style.bottom = `-${120 + (Math.random() * 320)}px`;
-                // Balanced slower floating time (7s - 9.5s) for smooth clicking access
                 b.style.animationDuration = (Math.random() * 2.5 + 7) + 's';
                 
                 b.addEventListener('click', function(e) {
@@ -544,7 +539,6 @@
             }
         }
 
-        /* FIXED: SPARKLES DELETED COMPLETELY AFTER BLAST - NO FREEZE */
         function executeSparkles() {
             let sparkleSound = document.getElementById('sparkle-sound');
             sparkleSound.currentTime = 0;
@@ -568,7 +562,6 @@
 
                 containerPage.appendChild(s);
                 
-                // FORCE DELETE COMPLETELY AFTER 1 SEC TO PREVENT ANY FREEZING
                 setTimeout(() => { 
                     if(s && s.parentNode) s.remove(); 
                 }, 1000);
@@ -601,14 +594,12 @@
             msg.style.cssText = "font-size: 1.6rem; margin-top: 15px; color:#ffeb3b; font-weight:bold; text-shadow:0 0 10px rgba(255,235,59,0.5);";
             document.getElementById('cakeContainer').after(msg);
 
-            // INSTANT ACCESS - BROUGHT NEXT STEP WITHIN 300MS INSTEAD OF DEFERRING IT
             setTimeout(() => {
                 document.getElementById('step4Next').classList.add('active-step');
             }, 300);
         }
 
         function navigateTo(pageId) {
-            // REMOVE BANNER IF WE LEAVE PAGE 1 ABSOLUTELY
             if (pageId !== 1) {
                 document.getElementById('birthday-banner').classList.remove('show');
             }
@@ -632,7 +623,6 @@
             }, 700);
         }
 
-        /* 3D CAROUSEL GALLERY CONTROLLER */
         let carouselDeg = 0;
         let isDragging = false;
         let startX = 0;
@@ -676,7 +666,6 @@
             });
         }
 
-        /* FIXED CLOSE CONTROLLER: TRIGGER PERMANENT TEXT ON SCREEN ON DISMISS */
         function closePopupBox() {
             document.getElementById('finalPopup').classList.remove('show-popup');
             setTimeout(() => {
@@ -684,7 +673,6 @@
             }, 400);
         }
 
-        /* ENGINE CONFETTI GRAPHICS FOR PAGE 1 */
         function initConfettiExplosion() {
             const canvas = document.getElementById('confetti');
             const ctx = canvas.getContext('2d');
